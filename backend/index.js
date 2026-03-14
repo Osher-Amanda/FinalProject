@@ -13,8 +13,10 @@ const PORT = process.env.PORT || 5001;
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "https://your-vercel-url.vercel.app"
-  ]
+    "https://final-project-zeta-woad.vercel.app"
+  ],
+  methods: ["GET","POST","DELETE"],
+  credentials: true
 }));
 app.use(express.json());
 
