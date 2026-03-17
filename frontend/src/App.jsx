@@ -154,6 +154,32 @@ const toggleCompare = (listing) => {
   toggleCompare={toggleCompare}
 />
 ))}
+{/* ================= COMPARE TABLE ================= */}
+{compare.length > 0 && (
+  <div style={{ marginTop: 40 }}>
+    <h2>Compare Listings ⚖️</h2>
+
+    <table border="1" cellPadding="10">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>City</th>
+          <th>Price</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        {compare.map((l) => (
+          <tr key={l.id}>
+            <td>{l.title}</td>
+            <td>{l.city}</td>
+            <td>₪{l.price}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  </div>
+)}
     </div>
   );
 }

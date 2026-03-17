@@ -139,20 +139,20 @@ app.post("/favorites", async (req, res) => {
 
 
 // REMOVE favorite
-app.delete("/favorites", async (req, res) => {
+app.delete("/favorites/:listing_id", async (req, res) => {
   try {
-    const { user_id, listing_id } = req.body;
+    const { listing_id } = req.params;
+    const user_id = 1;
 
     await pool.query(
-      "DELETE FROM favorites WHERE user_id=$1 AND listing_id=$2",
-      [user_id, listing_id]
+      "DELETE FROM favorites WHERE listing_id = $1 AND user_id = $2",
+      [listing_id, user_id]
     );
 
-    res.send("Removed from favorites");
-
+    res.json({ message: "Removed from favorites" });
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Error removing favorite");
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
   }
 });
 
