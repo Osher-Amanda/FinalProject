@@ -173,6 +173,23 @@ app.post("/ratings", async (req, res) => {
   }
 });
 
+app.get("/favorites", async (req, res) => {
+  try {
+    const user_id = req.query.user_id;
+
+    const result = await pool.query(
+      `SELECT listings.* FROM favorites
+       JOIN listings ON favorites.listing_id = listings.id
+       WHERE favorites.user_id = $1`,
+      [user_id]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 /* ================= START SERVER ================= */
 
 app.listen(PORT, () => {

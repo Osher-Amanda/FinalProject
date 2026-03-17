@@ -5,6 +5,7 @@ function App() {
   const [listings, setListings] = useState([]);
   const [favorites, setFavorites] = useState([]);
   const [view, setView] = useState("listings");
+  const [compare, setCompare] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -34,9 +35,11 @@ function App() {
 
   // ================= FETCH FAVORITES =================
   const fetchFavorites = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.get(`${API}/favorites`);
+  setLoading(true);
+  try {
+    const res = await axios.get(`${API}/favorites`, {
+      params: { user_id: 1 }
+    });
       setFavorites(res.data);
       setView("favorites");
     } catch {
@@ -60,6 +63,18 @@ function App() {
     } else {
       alert("Server error");
     }
+  }
+};
+
+const toggleCompare = (listing) => {
+  if (compare.find(l => l.id === listing.id)) {
+    setCompare(compare.filter(l => l.id !== listing.id));
+  } else {
+    if (compare.length >= 3) {
+      alert("You can compare up to 3 listings");
+      return;
+    }
+    setCompare([...compare, listing]);
   }
 };
 
@@ -121,24 +136,30 @@ function App() {
       {/* LISTINGS */}
       {view === "listings" &&
         listings.map((l) => (
-          <Card key={l.id} listing={l} saveFavorite={saveFavorite} />
+         <Card
+  key={l.id}
+  listing={l}
+  saveFavorite={saveFavorite}
+  toggleCompare={toggleCompare}
+/>
         ))}
 
       {/* FAVORITES */}
       {view === "favorites" &&
   favorites.map((l) => (
     <Card
-      key={l.id}
-      listing={l}
-      removeFavorite={removeFavorite}
-    />
+  key={l.id}
+  listing={l}
+  removeFavorite={removeFavorite}
+  toggleCompare={toggleCompare}
+/>
 ))}
     </div>
   );
 }
 
 // ================= CARD COMPONENT =================
-function Card({ listing, saveFavorite, removeFavorite }) {
+function Card({ listing, saveFavorite, removeFavorite, toggleCompare }) {
   return (
     <div style={{
       border: "1px solid #ccc",
@@ -156,6 +177,11 @@ function Card({ listing, saveFavorite, removeFavorite }) {
           ❤️ Save
         </button>
       )}
+      {toggleCompare && (
+  <button onClick={() => toggleCompare(listing)}>
+    ⚖️ Compare
+  </button>
+)}
 
       {removeFavorite && (
         <button onClick={() => removeFavorite(listing.id)}>
