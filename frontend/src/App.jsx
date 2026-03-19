@@ -13,7 +13,7 @@ function App() {
   const [maxPrice, setMaxPrice] = useState("");
   const [city, setCity] = useState("");
 
-  const API = "https://finalproject-backend-hqi0.onrender.com";
+const API = "https://finalproject-backend-hqi0.onrender.com";
 
   // ================= FETCH LISTINGS =================
   const fetchListings = async () => {
@@ -134,15 +134,16 @@ const toggleCompare = (listing) => {
       {error && <p style={{ color: "red" }}>{error}</p>}
 
       {/* LISTINGS */}
-      {view === "listings" &&
-        listings.map((l) => (
-         <Card
-  key={l.id}
-  listing={l}
-  saveFavorite={saveFavorite}
-  toggleCompare={toggleCompare}
-/>
-        ))}
+{view === "listings" &&
+  listings.map((l) => (
+    <Card
+      key={l.id}
+      listing={l}
+      saveFavorite={saveFavorite}
+      toggleCompare={toggleCompare}
+      API={API}
+    />
+  ))}
 
       {/* FAVORITES */}
       {view === "favorites" &&
@@ -152,6 +153,7 @@ const toggleCompare = (listing) => {
   listing={l}
   removeFavorite={removeFavorite}
   toggleCompare={toggleCompare}
+  API={API}
 />
 ))}
 {/* ================= COMPARE TABLE ================= */}
@@ -185,8 +187,37 @@ const toggleCompare = (listing) => {
 }
 
 // ================= CARD COMPONENT =================
-function Card({ listing, saveFavorite, removeFavorite, toggleCompare }) {
-  return (
+function Card({ listing, saveFavorite, removeFavorite, toggleCompare, API }) {
+
+  const [reviews, setReviews] = useState([]);
+
+  useEffect(() => {
+  const fetchReviews = async () => {
+    try {
+      const res = await axios.get(`${API}/reviews/${listing.id}`);
+      setReviews(res.data);
+    } catch {
+      console.log("Failed to load reviews");
+    }
+  };
+
+  fetchReviews();
+}, [listing.id]);
+
+return (
+  <div>
+    <div style={{ marginTop: 10 }}>
+      <h4>Reviews:</h4>
+
+      {reviews.length === 0 && <p>No reviews yet</p>}
+
+      {reviews.map((r) => (
+        <p key={r.id}>
+          ⭐ {r.rating} - {r.comment}
+        </p>
+      ))}
+    </div>
+
     <div style={{
       border: "1px solid #ccc",
       padding: 15,
@@ -204,18 +235,38 @@ function Card({ listing, saveFavorite, removeFavorite, toggleCompare }) {
         </button>
       )}
       {toggleCompare && (
-  <button onClick={() => toggleCompare(listing)}>
-    ⚖️ Compare
-  </button>
-)}
+        <button onClick={() => toggleCompare(listing)}>
+          ⚖️ Compare
+        </button>
+      )}
 
       {removeFavorite && (
         <button onClick={() => removeFavorite(listing.id)}>
           ❌ Remove
         </button>
       )}
+
+      <button onClick={async () => {
+  const rating = prompt("Rate 1-5");
+  const comment = prompt("Write a comment");
+
+  await axios.post(`${API}/reviews`, {
+    listing_id: parseInt(listing.id),
+    rating,
+    comment
+  });
+
+  // 🔥 RE-FETCH REVIEWS AFTER ADDING
+  const res = await axios.get(`${API}/reviews/${listing.id}`);
+  setReviews(res.data);
+
+  alert("Review added ⭐");
+}}>
+  ⭐ Add Review
+</button>
     </div>
-  );
+  </div>
+);
 }
      
 export default App;
