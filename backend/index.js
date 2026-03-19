@@ -190,6 +190,40 @@ app.get("/favorites", async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 });
+
+// ================= ADD REVIEW =================
+app.post("/reviews", async (req, res) => {
+  try {
+    const { listing_id, rating, comment } = req.body;
+
+    await pool.query(
+      "INSERT INTO reviews (listing_id, rating, comment) VALUES ($1, $2, $3)",
+      [listing_id, rating, comment]
+    );
+
+    res.json({ message: "Review added" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+// ================= GET REVIEWS =================
+app.get("/reviews/:listing_id", async (req, res) => {
+  try {
+    const listing_id = parseInt(req.params.listing_id);
+
+    const result = await pool.query(
+      "SELECT * FROM reviews WHERE listing_id = $1",
+      [listing_id]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error("GET REVIEWS ERROR:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
 /* ================= START SERVER ================= */
 
 app.listen(PORT, () => {

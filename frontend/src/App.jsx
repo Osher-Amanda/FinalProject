@@ -164,18 +164,28 @@ const toggleCompare = (listing) => {
     <table border="1" cellPadding="10">
       <thead>
         <tr>
-          <th>Title</th>
-          <th>City</th>
-          <th>Price</th>
+        <th>Title</th>
+<th>City</th>
+<th>Price</th>
+<th>Rooms</th>
+<th>Size</th>
+<th>Floor</th>
+<th>Amenities</th>
+<th>Commute</th>
         </tr>
       </thead>
 
       <tbody>
         {compare.map((l) => (
           <tr key={l.id}>
-            <td>{l.title}</td>
-            <td>{l.city}</td>
-            <td>₪{l.price}</td>
+           <th>Title</th>
+<th>City</th>
+<th>Price</th>
+<th>Rooms</th>
+<th>Size</th>
+<th>Floor</th>
+<th>Amenities</th>
+<th>Commute</th>
           </tr>
         ))}
       </tbody>
@@ -228,6 +238,11 @@ return (
       <p>{listing.description}</p>
       <p><b>City:</b> {listing.city}</p>
       <p><b>Price:</b> ₪{listing.price}</p>
+<p><b>Rooms:</b> {listing.rooms}</p>
+<p><b>Size:</b> {listing.size} m²</p>
+<p><b>Floor:</b> {listing.floor}</p>
+<p><b>Amenities:</b> {listing.amenities}</p>
+<p><b>Commute:</b> {listing.commute}</p>
 
       {saveFavorite && (
         <button onClick={() => saveFavorite(listing.id)}>
