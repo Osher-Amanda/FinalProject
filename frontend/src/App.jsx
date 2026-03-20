@@ -13,8 +13,7 @@ function App() {
   const [maxPrice, setMaxPrice] = useState("");
   const [city, setCity] = useState("");
 
-const API = "https://finalproject-backend-hqi0.onrender.com";
-
+const API = "http://localhost:5001";
   // ================= FETCH LISTINGS =================
   const fetchListings = async () => {
     setLoading(true);
@@ -172,23 +171,25 @@ const toggleCompare = (listing) => {
 <th>Floor</th>
 <th>Amenities</th>
 <th>Commute</th>
+<th>Pet Friendly</th>
         </tr>
       </thead>
 
       <tbody>
-        {compare.map((l) => (
-          <tr key={l.id}>
-           <th>Title</th>
-<th>City</th>
-<th>Price</th>
-<th>Rooms</th>
-<th>Size</th>
-<th>Floor</th>
-<th>Amenities</th>
-<th>Commute</th>
-          </tr>
-        ))}
-      </tbody>
+  {compare.map((l) => (
+    <tr key={l.id}>
+      <td>{l.title}</td>
+      <td>{l.city}</td>
+      <td>₪{l.price}</td>
+      <td>{l.rooms}</td>
+      <td>{l.size} m²</td>
+      <td>{l.floor}</td>
+      <td>{l.amenities}</td>
+      <td>{l.commute}</td>
+      <td>{l.pet_friendly ? "Yes" : "No"}</td>
+    </tr>
+  ))}
+</tbody>
     </table>
   </div>
 )}
@@ -243,6 +244,7 @@ return (
 <p><b>Floor:</b> {listing.floor}</p>
 <p><b>Amenities:</b> {listing.amenities}</p>
 <p><b>Commute:</b> {listing.commute}</p>
+<p><b>Pet Friendly:</b> {listing.pet_friendly ? "🐶 Yes" : "❌ No"}</p>
 
       {saveFavorite && (
         <button onClick={() => saveFavorite(listing.id)}>

@@ -48,7 +48,21 @@ app.get("/listings", async (req, res) => {
   try {
     const { minPrice, maxPrice, city } = req.query;
 
-    let query = "SELECT * FROM listings WHERE 1=1";
+    let query = `
+  SELECT 
+    id,
+    title,
+    description,
+    city,
+    price,
+    rooms,
+    size,
+    floor,
+    amenities,
+    commute
+  FROM listings
+  WHERE 1=1
+`;
     let values = [];
 
     if (minPrice) {
