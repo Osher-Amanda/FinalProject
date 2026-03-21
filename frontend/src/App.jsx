@@ -8,12 +8,14 @@ function App() {
   const [compare, setCompare] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+const [notification, setNotification] = useState("");
 
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [city, setCity] = useState("");
 
 const API = "http://localhost:5001";
+
   // ================= FETCH LISTINGS =================
   const fetchListings = async () => {
     setLoading(true);
@@ -55,7 +57,8 @@ const API = "http://localhost:5001";
       user_id: 1,
       listing_id: id
     });
-    alert("Saved ❤️");
+   setNotification("Saved to favorites ❤️");
+setTimeout(() => setNotification(""), 3000);
   } catch (err) {
     if (err.response?.status === 500) {
       alert("Already saved ❤️");
@@ -90,6 +93,18 @@ const toggleCompare = (listing) => {
   return (
     <div style={{ padding: 20, maxWidth: 800, margin: "auto" }}>
       <h1>Rental Listings 🇮🇱</h1>
+     {notification && (
+  <div style={{
+    background: "#d4edda",
+    color: "#155724",
+    padding: 10,
+    marginBottom: 15,
+    borderRadius: 5
+  }}>
+    {notification}
+  </div>
+)}
+  
 
       {/* NAV */}
       <div style={{ marginBottom: 20 }}>
@@ -136,12 +151,13 @@ const toggleCompare = (listing) => {
 {view === "listings" &&
   listings.map((l) => (
     <Card
-      key={l.id}
-      listing={l}
-      saveFavorite={saveFavorite}
-      toggleCompare={toggleCompare}
-      API={API}
-    />
+  key={l.id}
+  listing={l}
+  saveFavorite={saveFavorite}
+  toggleCompare={toggleCompare}
+  API={API}
+  setNotification={setNotification}
+/>
   ))}
 
       {/* FAVORITES */}
@@ -153,6 +169,7 @@ const toggleCompare = (listing) => {
   removeFavorite={removeFavorite}
   toggleCompare={toggleCompare}
   API={API}
+  setNotification={setNotification}
 />
 ))}
 {/* ================= COMPARE TABLE ================= */}
@@ -198,11 +215,12 @@ const toggleCompare = (listing) => {
 }
 
 // ================= CARD COMPONENT =================
-function Card({ listing, saveFavorite, removeFavorite, toggleCompare, API }) {
-
+function Card({ listing, saveFavorite, removeFavorite, toggleCompare, API, setNotification }) {
+const [recommendations, setRecommendations] = useState([]);
   const [reviews, setReviews] = useState([]);
 
-  useEffect(() => {
+  // ✅ REVIEWS
+useEffect(() => {
   const fetchReviews = async () => {
     try {
       const res = await axios.get(`${API}/reviews/${listing.id}`);
@@ -214,6 +232,28 @@ function Card({ listing, saveFavorite, removeFavorite, toggleCompare, API }) {
 
   fetchReviews();
 }, [listing.id]);
+
+// ✅ AI RECOMMENDATIONS
+useEffect(() => {
+  const fetchRecommendations = async () => {
+    try {
+      const res = await axios.get(`${API}/listings`);
+
+      const similar = res.data.filter(l =>
+        l.id !== listing.id &&
+        l.city === listing.city &&
+        Math.abs(l.price - listing.price) <= 1000
+      );
+
+      setRecommendations(similar.slice(0, 2));
+    } catch {
+      console.log("Failed to load recommendations");
+    }
+  };
+
+  fetchRecommendations();
+}, [listing.id]);
+
 
 return (
   <div>
@@ -245,7 +285,17 @@ return (
 <p><b>Amenities:</b> {listing.amenities}</p>
 <p><b>Commute:</b> {listing.commute}</p>
 <p><b>Pet Friendly:</b> {listing.pet_friendly ? "🐶 Yes" : "❌ No"}</p>
+<div style={{ marginTop: 10 }}>
+  <h4>Recommended for you:</h4>
 
+  {recommendations.length === 0 && <p>No similar listings</p>}
+
+  {recommendations.map((r) => (
+    <p key={r.id}>
+      👉 {r.title} – ₪{r.price}
+    </p>
+  ))}
+</div>
       {saveFavorite && (
         <button onClick={() => saveFavorite(listing.id)}>
           ❤️ Save
@@ -277,7 +327,8 @@ return (
   const res = await axios.get(`${API}/reviews/${listing.id}`);
   setReviews(res.data);
 
-  alert("Review added ⭐");
+ setNotification("Review added ⭐");
+setTimeout(() => setNotification(""), 3000);
 }}>
   ⭐ Add Review
 </button>
