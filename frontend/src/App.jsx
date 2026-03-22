@@ -14,7 +14,7 @@ const [notification, setNotification] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
   const [city, setCity] = useState("");
 
-const API = "http://localhost:5001";
+const API = "https://finalproject-backend-hqi0.onrender.com";
 
   // ================= FETCH LISTINGS =================
   const fetchListings = async () => {
