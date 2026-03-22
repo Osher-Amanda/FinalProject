@@ -110,28 +110,6 @@ app.post("/listings", async (req, res) => {
   }
 });
 
-/* ================= FAVORITES ================= */
-
-// GET favorites for a user
-app.get("/favorites/:userId", async (req, res) => {
-  try {
-    const userId = req.params.userId;
-
-    const result = await pool.query(`
-      SELECT listings.*
-      FROM favorites
-      JOIN listings ON listings.id = favorites.listing_id
-      WHERE favorites.user_id = $1
-    `, [userId]);
-
-    res.json(result.rows);
-
-  } catch (err) {
-    console.error("Favorites error:", err.message);
-    res.status(500).send("Error fetching favorites");
-  }
-});
-
 
 // SAVE favorite
 app.post("/favorites", async (req, res) => {
@@ -170,22 +148,6 @@ app.delete("/favorites/:listing_id", async (req, res) => {
   }
 });
 
-// ADD RATING
-app.post("/ratings", async (req, res) => {
-  try {
-    const { user_id, listing_id, rating, comment } = req.body;
-
-    const result = await pool.query(
-      "INSERT INTO ratings (user_id, listing_id, rating, comment) VALUES ($1,$2,$3,$4) RETURNING *",
-      [user_id, listing_id, rating, comment]
-    );
-
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send("Error adding rating");
-  }
-});
 
 app.get("/favorites", async (req, res) => {
   try {
